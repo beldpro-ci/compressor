@@ -2,6 +2,7 @@ package compressor
 
 import (
 	"archive/tar"
+	"bytes"
 	"compress/gzip"
 	"fmt"
 	"os"
@@ -41,6 +42,29 @@ func isTarGz(targzPath string) bool {
 	}
 
 	return hasTarHeader(buf)
+}
+
+func (tarGzFormat) MakeBytes(filePaths []string) (*bytes.Buffer, error) {
+	const targzPath = "/123132121231133231"
+	buf := new(bytes.Buffer)
+	gzWriter := gzip.NewWriter(buf)
+	defer gzWriter.Close()
+
+	tarWriter := tar.NewWriter(gzWriter)
+	defer tarWriter.Close()
+
+	return buf, tarball(filePaths, tarWriter, targzPath)
+}
+
+// Open untars source and puts the contents into destination.
+func (tarGzFormat) OpenBytes(source *bytes.Buffer, destination string) error {
+	gzr, err := gzip.NewReader(source)
+	if err != nil {
+		return err
+	}
+	defer gzr.Close()
+
+	return untar(tar.NewReader(gzr), destination)
 }
 
 // Make creates a .tar.gz file at targzPath containing

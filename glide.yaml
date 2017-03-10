@@ -4,3 +4,6 @@ import:
   version: v1.1.4
   subpackages:
   - assert
+- package: github.com/dsnet/compress
+  subpackages:
+  - bzip2
