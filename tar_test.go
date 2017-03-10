@@ -1,7 +1,6 @@
 package compressor
 
 import (
-	"fmt"
 	"github.com/stretchr/testify/assert"
 	"io"
 	"io/ioutil"
@@ -13,16 +12,14 @@ import (
 
 // base comparison test
 func TestTar(t *testing.T) {
+	t.Parallel()
 	sourceDir, err := ioutil.TempDir("", "")
 	assert.NoError(t, err)
 	defer os.RemoveAll(sourceDir)
 
 	destDir, err := ioutil.TempDir("", "")
 	assert.NoError(t, err)
-	defer os.RemoveAll(sourceDir)
-
-	fmt.Println("source=" + sourceDir)
-	fmt.Println("dest=" + destDir)
+	defer os.RemoveAll(destDir)
 
 	file1, err := ioutil.TempFile(sourceDir, "")
 	assert.NoError(t, err)
@@ -45,16 +42,14 @@ func TestTar(t *testing.T) {
 }
 
 func TestTarOpen_canUntarNormalFile(t *testing.T) {
+	t.Parallel()
 	sourceDir, err := ioutil.TempDir("", "")
 	assert.NoError(t, err)
 	defer os.RemoveAll(sourceDir)
 
 	destDir, err := ioutil.TempDir("", "")
 	assert.NoError(t, err)
-	defer os.RemoveAll(sourceDir)
-
-	fmt.Println("source=" + sourceDir)
-	fmt.Println("dest=" + destDir)
+	defer os.RemoveAll(destDir)
 
 	file1, err := ioutil.TempFile(sourceDir, "")
 	assert.NoError(t, err)
@@ -77,16 +72,14 @@ func TestTarOpen_canUntarNormalFile(t *testing.T) {
 }
 
 func TestTarMake_shouldCorrectlyProduceTar(t *testing.T) {
+	t.Parallel()
 	sourceDir, err := ioutil.TempDir("", "")
 	assert.NoError(t, err)
 	defer os.RemoveAll(sourceDir)
 
 	destDir, err := ioutil.TempDir("", "")
 	assert.NoError(t, err)
-	defer os.RemoveAll(sourceDir)
-
-	fmt.Println("source=" + sourceDir)
-	fmt.Println("dest=" + destDir)
+	defer os.RemoveAll(destDir)
 
 	file1, err := ioutil.TempFile(sourceDir, "")
 	assert.NoError(t, err)
@@ -108,16 +101,14 @@ func TestTarMake_shouldCorrectlyProduceTar(t *testing.T) {
 }
 
 func TestTarMakeBytes_shouldCorrectlyProduce(t *testing.T) {
+	t.Parallel()
 	sourceDir, err := ioutil.TempDir("", "")
 	assert.NoError(t, err)
 	defer os.RemoveAll(sourceDir)
 
 	destDir, err := ioutil.TempDir("", "")
 	assert.NoError(t, err)
-	defer os.RemoveAll(sourceDir)
-
-	fmt.Println("source=" + sourceDir)
-	fmt.Println("dest=" + destDir)
+	defer os.RemoveAll(destDir)
 
 	file1, err := ioutil.TempFile(sourceDir, "")
 	assert.NoError(t, err)
@@ -147,16 +138,14 @@ func TestTarMakeBytes_shouldCorrectlyProduce(t *testing.T) {
 }
 
 func TestTarOpenBytes_shouldCorrectlyUntarBytes(t *testing.T) {
+	t.Parallel()
 	sourceDir, err := ioutil.TempDir("", "")
 	assert.NoError(t, err)
 	defer os.RemoveAll(sourceDir)
 
 	destDir, err := ioutil.TempDir("", "")
 	assert.NoError(t, err)
-	defer os.RemoveAll(sourceDir)
-
-	fmt.Println("source=" + sourceDir)
-	fmt.Println("dest=" + destDir)
+	defer os.RemoveAll(destDir)
 
 	file1, err := ioutil.TempFile(sourceDir, "")
 	assert.NoError(t, err)

@@ -9,39 +9,13 @@ import (
 	"strings"
 )
 
-// TarGz is for TarGz format
-var TarGz tarGzFormat
-
+// tarGzFormat is for tarGzFormat format
 type tarGzFormat struct{}
 
 func (tarGzFormat) Match(filename string) bool {
 	return strings.HasSuffix(strings.ToLower(filename), ".tar.gz") ||
 		strings.HasSuffix(strings.ToLower(filename), ".tgz") ||
-		isTarGz(filename)
-}
-
-// isTarGz checks the file has the gzip compressed Tar format header by reading
-// its beginning block.
-func isTarGz(targzPath string) bool {
-	f, err := os.Open(targzPath)
-	if err != nil {
-		return false
-	}
-	defer f.Close()
-
-	gzr, err := gzip.NewReader(f)
-	if err != nil {
-		return false
-	}
-	defer gzr.Close()
-
-	buf := make([]byte, tarBlockSize)
-	n, err := gzr.Read(buf)
-	if err != nil || n < tarBlockSize {
-		return false
-	}
-
-	return hasTarHeader(buf)
+		istarGzFormat(filename)
 }
 
 func (tarGzFormat) MakeBytes(filePaths []string) (*bytes.Buffer, error) {
@@ -101,4 +75,28 @@ func (tarGzFormat) Open(source, destination string) error {
 	defer gzr.Close()
 
 	return untar(tar.NewReader(gzr), destination)
+}
+
+// istarGzFormat checks the file has the gzip compressed Tar format header by reading
+// its beginning block.
+func istarGzFormat(targzPath string) bool {
+	f, err := os.Open(targzPath)
+	if err != nil {
+		return false
+	}
+	defer f.Close()
+
+	gzr, err := gzip.NewReader(f)
+	if err != nil {
+		return false
+	}
+	defer gzr.Close()
+
+	buf := make([]byte, tarBlockSize)
+	n, err := gzr.Read(buf)
+	if err != nil || n < tarBlockSize {
+		return false
+	}
+
+	return hasTarHeader(buf)
 }

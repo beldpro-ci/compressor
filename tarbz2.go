@@ -9,39 +9,12 @@ import (
 	"strings"
 )
 
-// TarBz2 is for TarBz2 format
-var TarBz2 tarBz2Format
-
 type tarBz2Format struct{}
 
 func (tarBz2Format) Match(filename string) bool {
 	return strings.HasSuffix(strings.ToLower(filename), ".tar.bz2") ||
 		strings.HasSuffix(strings.ToLower(filename), ".tbz2") ||
-		isTarBz2(filename)
-}
-
-// isTarBz2 checks the file has the bzip2 compressed Tar format header by
-// reading its beginning block.
-func isTarBz2(tarbz2Path string) bool {
-	f, err := os.Open(tarbz2Path)
-	if err != nil {
-		return false
-	}
-	defer f.Close()
-
-	bz2r, err := bzip2.NewReader(f, nil)
-	if err != nil {
-		return false
-	}
-	defer bz2r.Close()
-
-	buf := make([]byte, tarBlockSize)
-	n, err := bz2r.Read(buf)
-	if err != nil || n < tarBlockSize {
-		return false
-	}
-
-	return hasTarHeader(buf)
+		istarBz2Format(filename)
 }
 
 func (tarBz2Format) MakeBytes(filePaths []string) (*bytes.Buffer, error) {
@@ -108,4 +81,28 @@ func (tarBz2Format) Open(source, destination string) error {
 	defer bz2r.Close()
 
 	return untar(tar.NewReader(bz2r), destination)
+}
+
+// istarBz2Format checks the file has the bzip2 compressed Tar format header by
+// reading its beginning block.
+func istarBz2Format(tarbz2Path string) bool {
+	f, err := os.Open(tarbz2Path)
+	if err != nil {
+		return false
+	}
+	defer f.Close()
+
+	bz2r, err := bzip2.NewReader(f, nil)
+	if err != nil {
+		return false
+	}
+	defer bz2r.Close()
+
+	buf := make([]byte, tarBlockSize)
+	n, err := bz2r.Read(buf)
+	if err != nil || n < tarBlockSize {
+		return false
+	}
+
+	return hasTarHeader(buf)
 }
