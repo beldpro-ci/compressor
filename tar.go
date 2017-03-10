@@ -198,6 +198,11 @@ func (tarFormat) Open(source, destination string) error {
 	return untar(tar.NewReader(f), destination)
 }
 
+// Open untars source and puts the contents into destination.
+func (tarFormat) OpenBytes(source *bytes.Buffer, destination string) error {
+	return untar(tar.NewReader(source), destination)
+}
+
 // untar un-tarballs the contents of tr into destination.
 func untar(tr *tar.Reader, destination string) error {
 	for {
