@@ -1,0 +1,7 @@
+dependencies:
+  override:
+    - "go get -u -v github.com/Masterminds/glide"
+    - make deps
+test:
+  override:
+    - make test
