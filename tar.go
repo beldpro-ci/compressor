@@ -85,18 +85,16 @@ func hasTarHeader(buf []byte) bool {
 	return true
 }
 
-
-
 // MakeBytes makes a buffer of bytes that is a tar file
-func (tarFormat) MakeBytes(tarPath string, filePaths []string) (*bytes.Buffer, error) {
+func (tarFormat) MakeBytes(filePaths []string) (*bytes.Buffer, error) {
+	const tarPath = "/1111111122222222223333333"
 	buf := new(bytes.Buffer)
 
 	tarWriter := tar.NewWriter(buf)
 	defer tarWriter.Close()
 
-	return tarball(filePaths, tarWriter, tarPath)
+	return buf, tarball(filePaths, tarWriter, tarPath)
 }
-
 
 // Make creates a .tar file at tarPath containing the
 // contents of files listed in filePaths. File paths can
@@ -115,8 +113,6 @@ func (tarFormat) Make(tarPath string, filePaths []string) error {
 
 	return tarball(filePaths, tarWriter, tarPath)
 }
-
-
 
 // tarball writes all files listed in filePaths into tarWriter, which is
 // writing into a file located at dest.

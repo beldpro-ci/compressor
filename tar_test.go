@@ -3,6 +3,7 @@ package compressor
 import (
 	"fmt"
 	"github.com/stretchr/testify/assert"
+	"io"
 	"io/ioutil"
 	"os"
 	"os/exec"
@@ -42,7 +43,7 @@ func TestTar(t *testing.T) {
 	assert.Equal(t, 3, len(files))
 }
 
-func TestTar_shouldCorrectlyProduce(t *testing.T) {
+func TestTarMake_shouldCorrectlyProduceTar(t *testing.T) {
 	sourceDir, err := ioutil.TempDir("", "")
 	assert.NoError(t, err)
 	defer os.RemoveAll(sourceDir)
@@ -70,5 +71,42 @@ func TestTar_shouldCorrectlyProduce(t *testing.T) {
 	files, err = ioutil.ReadDir(destDir)
 	assert.NoError(t, err)
 	assert.Equal(t, 3, len(files))
+}
 
+func TestTarMakeBytes_shouldCorrectlyProduce(t *testing.T) {
+	sourceDir, err := ioutil.TempDir("", "")
+	assert.NoError(t, err)
+	defer os.RemoveAll(sourceDir)
+
+	destDir, err := ioutil.TempDir("", "")
+	assert.NoError(t, err)
+	defer os.RemoveAll(sourceDir)
+
+	fmt.Println("source=" + sourceDir)
+	fmt.Println("dest=" + destDir)
+
+	file1, err := ioutil.TempFile(sourceDir, "")
+	assert.NoError(t, err)
+	file2, err := ioutil.TempFile(sourceDir, "")
+	assert.NoError(t, err)
+
+	buffer, err := Tar.MakeBytes([]string{file1.Name(), file2.Name()})
+	assert.NoError(t, err)
+
+	out, err := os.Create(destDir + "/tar.tar")
+	assert.NoError(t, err)
+	defer out.Close()
+
+	_, err = io.Copy(out, buffer)
+	assert.NoError(t, err)
+	out.Sync()
+
+	files, err := ioutil.ReadDir(destDir)
+	assert.NoError(t, err)
+	assert.Equal(t, 1, len(files))
+
+	err = exec.Command("tar", "-xf", destDir+"/tar.tar", "-C", destDir).Run()
+	files, err = ioutil.ReadDir(destDir)
+	assert.NoError(t, err)
+	assert.Equal(t, 3, len(files))
 }
