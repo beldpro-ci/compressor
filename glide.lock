@@ -1,5 +1,5 @@
-hash: 5f412aa89989354b7320cbd2f206e00805231170bcfd4e49eb06fba12ae4a62b
-updated: 2017-03-10T15:08:59.646940805-03:00
+hash: 7b37dab7075975ebba7be913943c12233bc5356fd42be6949a3ca4cb1e7f5a50
+updated: 2017-03-12T14:56:21.147099725-03:00
 imports:
 - name: github.com/dsnet/compress
   version: b9aab3c6a04eef14c56384b4ad065e7b73438862
@@ -12,6 +12,10 @@ imports:
   version: 69483b4bd14f5845b5a1e55bca19e954e827f1d0
   subpackages:
   - assert
+- name: gopkg.in/src-d/go-billy.v2
+  version: 0dfa3dd2e89c570b8e1e25f5b28647525c44c3ca
+  subpackages:
+  - memfs
 testImports:
 - name: github.com/davecgh/go-spew
   version: 6d212800a42e8ab5c146b8ace3490ee17e5225f9

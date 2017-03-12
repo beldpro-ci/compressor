@@ -166,15 +166,19 @@ func tarball(filePaths []string, tarWriter *tar.Writer, dest string) error {
 func tarFile(tarWriter *tar.Writer, source, dest string) error {
 	sourceInfo, err := os.Stat(source)
 	if err != nil {
+		// source doesn't exist
 		return fmt.Errorf("%s: stat: %v", source, err)
 	}
 
 	var baseDir string
 	if sourceInfo.IsDir() {
 		baseDir = filepath.Base(source)
+		fmt.Printf("baseDir=%s,directory=true\n", baseDir)
 	}
 
 	return filepath.Walk(source, func(path string, info os.FileInfo, err error) error {
+		fmt.Printf("looking-at=%s\n", path)
+
 		if err != nil {
 			return fmt.Errorf("error walking to %s: %v", path, err)
 		}
@@ -197,12 +201,17 @@ func tarFile(tarWriter *tar.Writer, source, dest string) error {
 			header.Name += "/"
 		}
 
+		fmt.Printf("header-name=%s\n", header.Name)
+		fmt.Printf("fileinfo=%+v\n", info)
+		fmt.Printf("header=%+v\n", header)
 		err = tarWriter.WriteHeader(header)
 		if err != nil {
 			return fmt.Errorf("%s: writing header: %v", path, err)
 		}
 
+		fmt.Printf("header written!\n")
 		if info.IsDir() {
+			fmt.Printf("isdirectory=true; skipping\n")
 			return nil
 		}
 
@@ -212,11 +221,14 @@ func tarFile(tarWriter *tar.Writer, source, dest string) error {
 				return fmt.Errorf("%s: open: %v", path, err)
 			}
 			defer file.Close()
+			fmt.Printf("openned the file %s\n", path)
 
-			_, err = io.CopyN(tarWriter, file, info.Size())
+			bytesWritten, err := io.CopyN(tarWriter, file, info.Size())
 			if err != nil && err != io.EOF {
 				return fmt.Errorf("%s: copying contents: %v", path, err)
 			}
+
+			fmt.Printf("contents copied to tarWriter! bytesWritten=%d\n", bytesWritten)
 		}
 		return nil
 	})
