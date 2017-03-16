@@ -1,6 +1,7 @@
 package compressor
 
 import (
+	"bytes"
 	"github.com/stretchr/testify/assert"
 	"io"
 	"io/ioutil"
@@ -115,7 +116,8 @@ func TestTarMakeBytes_shouldCorrectlyProduce(t *testing.T) {
 	file2, err := ioutil.TempFile(sourceDir, "")
 	assert.NoError(t, err)
 
-	buffer, err := Tar.MakeBytes([]string{file1.Name(), file2.Name()})
+	var buffer = new(bytes.Buffer)
+	err = Tar.MakeBytes([]string{file1.Name(), file2.Name()}, buffer)
 	assert.NoError(t, err)
 
 	out, err := os.Create(destDir + "/tar.tar")
@@ -152,7 +154,8 @@ func TestTarOpenBytes_shouldCorrectlyUntarBytes(t *testing.T) {
 	file2, err := ioutil.TempFile(sourceDir, "")
 	assert.NoError(t, err)
 
-	buffer, err := Tar.MakeBytes([]string{file1.Name(), file2.Name()})
+	var buffer = new(bytes.Buffer)
+	err = Tar.MakeBytes([]string{file1.Name(), file2.Name()}, buffer)
 	assert.NoError(t, err)
 
 	err = Tar.OpenBytes(buffer, destDir)

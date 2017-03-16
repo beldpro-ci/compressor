@@ -1,13 +1,13 @@
 package compressor
 
 import (
-	"bytes"
+	"io"
 )
 
 // Compressor todo
 type Compressor interface {
 	// MakeBytes todo
-	MakeBytes(filePaths []string) (*bytes.Buffer, error)
+	MakeBytes(filePaths []string, writer io.Writer) error
 
 	// Make todo
 	Make(tarPath string, filePaths []string) error
@@ -16,7 +16,7 @@ type Compressor interface {
 	Open(source, destination string) error
 
 	// OpenBytes todo
-	OpenBytes(source *bytes.Buffer, destination string) error
+	OpenBytes(source io.Reader, destination string) error
 
 	// Match todo
 	Match(filename string) bool

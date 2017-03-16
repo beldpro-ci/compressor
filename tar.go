@@ -20,14 +20,12 @@ func (tarFormat) Match(filename string) bool {
 }
 
 // MakeBytes makes a buffer of bytes that is a tar file
-func (tarFormat) MakeBytes(filePaths []string) (*bytes.Buffer, error) {
+func (tarFormat) MakeBytes(filePaths []string, writer io.Writer) error {
 	const tarPath = "/1111111122222222223333333"
-	buf := new(bytes.Buffer)
-
-	tarWriter := tar.NewWriter(buf)
+	tarWriter := tar.NewWriter(writer)
 	defer tarWriter.Close()
 
-	return buf, tarball(filePaths, tarWriter, tarPath)
+	return tarball(filePaths, tarWriter, tarPath)
 }
 
 // Make creates a .tar file at tarPath containing the
@@ -60,7 +58,7 @@ func (tarFormat) Open(source, destination string) error {
 }
 
 // Open untars source and puts the contents into destination.
-func (tarFormat) OpenBytes(source *bytes.Buffer, destination string) error {
+func (tarFormat) OpenBytes(source io.Reader, destination string) error {
 	return untar(tar.NewReader(source), destination)
 }
 

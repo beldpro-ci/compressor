@@ -2,6 +2,7 @@ package compressor
 
 import (
 	"github.com/stretchr/testify/assert"
+	"io"
 	"io/ioutil"
 	"os"
 	"path/filepath"
@@ -23,7 +24,9 @@ var nestedFiles = []string{
 }
 
 var compressors = []Compressor{
-	TarGz, TarBz2, Tar,
+	TarGz,
+	TarBz2,
+	Tar,
 }
 
 func TestCompressors_canCompressFlatDirectory(t *testing.T) {
@@ -36,10 +39,13 @@ func TestCompressors_canCompressFlatDirectory(t *testing.T) {
 		assert.NoError(t, err)
 		defer os.RemoveAll(destDir)
 
-		buffer, err := compressor.MakeBytes([]string{fixturePath + "/flat"})
-		assert.NoError(t, err)
-
-		err = compressor.OpenBytes(buffer, destDir)
+		r, w := io.Pipe()
+		go func() {
+			defer w.Close()
+			err = compressor.MakeBytes([]string{fixturePath + "/flat"}, w)
+			assert.NoError(t, err)
+		}()
+		err = compressor.OpenBytes(r, destDir)
 		assert.NoError(t, err)
 
 		for _, file := range flatFiles {
@@ -59,10 +65,13 @@ func TestCompressors_canCompressNestedDirectory(t *testing.T) {
 		assert.NoError(t, err)
 		defer os.RemoveAll(destDir)
 
-		buffer, err := compressor.MakeBytes([]string{fixturePath + "/nested"})
-		assert.NoError(t, err)
-
-		err = compressor.OpenBytes(buffer, destDir)
+		r, w := io.Pipe()
+		go func() {
+			defer w.Close()
+			err := compressor.MakeBytes([]string{fixturePath + "/nested"}, w)
+			assert.NoError(t, err)
+		}()
+		err = compressor.OpenBytes(r, destDir)
 		assert.NoError(t, err)
 
 		for _, file := range nestedFiles {

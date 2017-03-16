@@ -2,9 +2,9 @@ package compressor
 
 import (
 	"archive/tar"
-	"bytes"
 	"compress/gzip"
 	"fmt"
+	"io"
 	"os"
 	"strings"
 )
@@ -18,20 +18,19 @@ func (tarGzFormat) Match(filename string) bool {
 		istarGzFormat(filename)
 }
 
-func (tarGzFormat) MakeBytes(filePaths []string) (*bytes.Buffer, error) {
+func (tarGzFormat) MakeBytes(filePaths []string, writer io.Writer) error {
 	const targzPath = "/123132121231133231"
-	buf := new(bytes.Buffer)
-	gzWriter := gzip.NewWriter(buf)
+	gzWriter := gzip.NewWriter(writer)
 	defer gzWriter.Close()
 
 	tarWriter := tar.NewWriter(gzWriter)
 	defer tarWriter.Close()
 
-	return buf, tarball(filePaths, tarWriter, targzPath)
+	return tarball(filePaths, tarWriter, targzPath)
 }
 
 // Open untars source and puts the contents into destination.
-func (tarGzFormat) OpenBytes(source *bytes.Buffer, destination string) error {
+func (tarGzFormat) OpenBytes(source io.Reader, destination string) error {
 	gzr, err := gzip.NewReader(source)
 	if err != nil {
 		return err
