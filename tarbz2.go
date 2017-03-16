@@ -2,9 +2,9 @@ package compressor
 
 import (
 	"archive/tar"
-	"bytes"
 	"fmt"
 	"github.com/dsnet/compress/bzip2"
+	"io"
 	"os"
 	"strings"
 )
@@ -17,19 +17,18 @@ func (tarBz2Format) Match(filename string) bool {
 		istarBz2Format(filename)
 }
 
-func (tarBz2Format) MakeBytes(filePaths []string) (*bytes.Buffer, error) {
+func (tarBz2Format) MakeBytes(filePaths []string, writer io.Writer) error {
 	const tarbz2Path = "/1111111122222222223333333"
-	buf := new(bytes.Buffer)
-	bz2Writer, err := bzip2.NewWriter(buf, nil)
+	bz2Writer, err := bzip2.NewWriter(writer, nil)
 	if err != nil {
-		return nil, err
+		return err
 	}
 	defer bz2Writer.Close()
 
 	tarWriter := tar.NewWriter(bz2Writer)
 	defer tarWriter.Close()
 
-	return buf, tarball(filePaths, tarWriter, tarbz2Path)
+	return tarball(filePaths, tarWriter, tarbz2Path)
 }
 
 // Make creates a .tar.bz2 file at tarbz2Path containing
@@ -56,7 +55,7 @@ func (tarBz2Format) Make(tarbz2Path string, filePaths []string) error {
 	return tarball(filePaths, tarWriter, tarbz2Path)
 }
 
-func (tarBz2Format) OpenBytes(source *bytes.Buffer, destination string) error {
+func (tarBz2Format) OpenBytes(source io.Reader, destination string) error {
 	bz2r, err := bzip2.NewReader(source, nil)
 	if err != nil {
 		return fmt.Errorf("error decompressing %s: %v", source, err)
