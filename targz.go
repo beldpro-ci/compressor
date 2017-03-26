@@ -2,8 +2,8 @@ package compressor
 
 import (
 	"archive/tar"
-	"compress/gzip"
 	"fmt"
+	gzip "github.com/klauspost/pgzip"
 	"io"
 	"os"
 	"strings"

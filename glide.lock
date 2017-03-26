@@ -1,5 +1,5 @@
-hash: 5f412aa89989354b7320cbd2f206e00805231170bcfd4e49eb06fba12ae4a62b
-updated: 2017-03-10T15:08:59.646940805-03:00
+hash: 8fdcd5cc68e26ddc1de603cbdd257be097a17a902d337b07a88e940f4c33499a
+updated: 2017-03-26T11:31:22.992078641-03:00
 imports:
 - name: github.com/dsnet/compress
   version: b9aab3c6a04eef14c56384b4ad065e7b73438862
@@ -8,6 +8,10 @@ imports:
   - bzip2/internal/sais
   - internal
   - internal/prefix
+- name: github.com/klauspost/pgzip
+  version: e1189db7261c60cf75c77d573014936620d3d119
+  subpackages:
+  - '...'
 - name: github.com/stretchr/testify
   version: 69483b4bd14f5845b5a1e55bca19e954e827f1d0
   subpackages:
