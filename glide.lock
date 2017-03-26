@@ -1,5 +1,5 @@
 hash: 8fdcd5cc68e26ddc1de603cbdd257be097a17a902d337b07a88e940f4c33499a
-updated: 2017-03-26T11:31:22.992078641-03:00
+updated: 2017-03-26T11:52:01.44093521-03:00
 imports:
 - name: github.com/dsnet/compress
   version: b9aab3c6a04eef14c56384b4ad065e7b73438862
@@ -8,6 +8,14 @@ imports:
   - bzip2/internal/sais
   - internal
   - internal/prefix
+- name: github.com/klauspost/compress
+  version: 14c9a76e3c95e47f8ccce949bba2c1101a8b85e6
+  subpackages:
+  - flate
+- name: github.com/klauspost/cpuid
+  version: 09cded8978dc9e80714c4d85b0322337b0a1e5e0
+- name: github.com/klauspost/crc32
+  version: 1bab8b35b6bb565f92cbc97939610af9369f942a
 - name: github.com/klauspost/pgzip
   version: e1189db7261c60cf75c77d573014936620d3d119
   subpackages:
