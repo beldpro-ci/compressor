@@ -25,36 +25,7 @@ func (tarFormat) MakeBytes(filePaths []string, writer io.Writer, skipperFn func(
 	tarWriter := tar.NewWriter(writer)
 	defer tarWriter.Close()
 
-	return tarball(filePaths, tarWriter, tarPath)
-}
-
-// Make creates a .tar file at tarPath containing the
-// contents of files listed in filePaths. File paths can
-// be those of regular files or directories. Regular
-// files are stored at the 'root' of the archive, and
-// directories are recursively added.
-func (tarFormat) Make(tarPath string, filePaths []string) error {
-	out, err := os.Create(tarPath)
-	if err != nil {
-		return fmt.Errorf("error creating %s: %v", tarPath, err)
-	}
-	defer out.Close()
-
-	tarWriter := tar.NewWriter(out)
-	defer tarWriter.Close()
-
-	return tarball(filePaths, tarWriter, tarPath)
-}
-
-// Open untars source and puts the contents into destination.
-func (tarFormat) Open(source, destination string) error {
-	f, err := os.Open(source)
-	if err != nil {
-		return fmt.Errorf("%s: failed to open archive: %v", source, err)
-	}
-	defer f.Close()
-
-	return untar(tar.NewReader(f), destination)
+	return tarball(filePaths, tarWriter, tarPath, skipperFn)
 }
 
 // Open untars source and puts the contents into destination.
