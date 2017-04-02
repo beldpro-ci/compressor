@@ -101,6 +101,10 @@ func TestTarMake_shouldCorrectlyProduceTar(t *testing.T) {
 	assert.Equal(t, 3, len(files))
 }
 
+func trueSkipper(string) bool {
+	return false
+}
+
 func TestTarMakeBytes_shouldCorrectlyProduce(t *testing.T) {
 	t.Parallel()
 	sourceDir, err := ioutil.TempDir("", "")
@@ -117,7 +121,7 @@ func TestTarMakeBytes_shouldCorrectlyProduce(t *testing.T) {
 	assert.NoError(t, err)
 
 	var buffer = new(bytes.Buffer)
-	err = Tar.MakeBytes([]string{file1.Name(), file2.Name()}, buffer)
+	err = Tar.MakeBytes([]string{file1.Name(), file2.Name()}, buffer, trueSkipper)
 	assert.NoError(t, err)
 
 	out, err := os.Create(destDir + "/tar.tar")
@@ -155,7 +159,7 @@ func TestTarOpenBytes_shouldCorrectlyUntarBytes(t *testing.T) {
 	assert.NoError(t, err)
 
 	var buffer = new(bytes.Buffer)
-	err = Tar.MakeBytes([]string{file1.Name(), file2.Name()}, buffer)
+	err = Tar.MakeBytes([]string{file1.Name(), file2.Name()}, buffer, trueSkipper)
 	assert.NoError(t, err)
 
 	err = Tar.OpenBytes(buffer, destDir)

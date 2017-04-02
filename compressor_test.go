@@ -42,7 +42,7 @@ func TestCompressors_canCompressFlatDirectory(t *testing.T) {
 		r, w := io.Pipe()
 		go func() {
 			defer w.Close()
-			err = compressor.MakeBytes([]string{fixturePath + "/flat"}, w)
+			err = compressor.MakeBytes([]string{fixturePath + "/flat"}, w, trueSkipper)
 			assert.NoError(t, err)
 		}()
 		err = compressor.OpenBytes(r, destDir)
@@ -68,7 +68,7 @@ func TestCompressors_canCompressNestedDirectory(t *testing.T) {
 		r, w := io.Pipe()
 		go func() {
 			defer w.Close()
-			err := compressor.MakeBytes([]string{fixturePath + "/nested"}, w)
+			err := compressor.MakeBytes([]string{fixturePath + "/nested"}, w, trueSkipper)
 			assert.NoError(t, err)
 		}()
 		err = compressor.OpenBytes(r, destDir)

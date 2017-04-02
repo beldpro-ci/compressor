@@ -20,7 +20,7 @@ func (tarFormat) Match(filename string) bool {
 }
 
 // MakeBytes makes a buffer of bytes that is a tar file
-func (tarFormat) MakeBytes(filePaths []string, writer io.Writer) error {
+func (tarFormat) MakeBytes(filePaths []string, writer io.Writer, skipperFn func(string) bool) error {
 	const tarPath = "/1111111122222222223333333"
 	tarWriter := tar.NewWriter(writer)
 	defer tarWriter.Close()
@@ -149,9 +149,9 @@ func hasTarHeader(buf []byte) bool {
 
 // tarball writes all files listed in filePaths into tarWriter, which is
 // writing into a file located at dest.
-func tarball(filePaths []string, tarWriter *tar.Writer, dest string) error {
+func tarball(filePaths []string, tarWriter *tar.Writer, dest string, skipperFn func(string) bool) error {
 	for _, fpath := range filePaths {
-		err := tarFile(tarWriter, fpath, dest)
+		err := tarFile(tarWriter, fpath, dest, skipperFn)
 		if err != nil {
 			return err
 		}
@@ -161,7 +161,7 @@ func tarball(filePaths []string, tarWriter *tar.Writer, dest string) error {
 
 // tarFile writes the file at source into tarWriter. It does so
 // recursively for directories.
-func tarFile(tarWriter *tar.Writer, source, dest string) error {
+func tarFile(tarWriter *tar.Writer, source, dest string, skipperFn func(string) bool) error {
 	sourceInfo, err := os.Stat(source)
 	if err != nil {
 		return fmt.Errorf("%s: stat: %v", source, err)
@@ -175,6 +175,14 @@ func tarFile(tarWriter *tar.Writer, source, dest string) error {
 	return filepath.Walk(source, func(path string, info os.FileInfo, err error) error {
 		if err != nil {
 			return fmt.Errorf("error walking to %s: %v", path, err)
+		}
+
+		if skipperFn(path) {
+			if info.IsDir() {
+				return filepath.SkipDir
+			}
+
+			return nil
 		}
 
 		header, err := tar.FileInfoHeader(info, path)
