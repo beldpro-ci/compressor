@@ -148,12 +148,14 @@ func tarFile(tarWriter *tar.Writer, source, dest string, skipperFn func(string) 
 			return fmt.Errorf("error walking to %s: %v", path, err)
 		}
 
-		if skipperFn(path) {
-			if info.IsDir() {
-				return filepath.SkipDir
-			}
+		if skipperFn != nil {
+			if skipperFn(path) {
+				if info.IsDir() {
+					return filepath.SkipDir
+				}
 
-			return nil
+				return nil
+			}
 		}
 
 		header, err := tar.FileInfoHeader(info, path)
