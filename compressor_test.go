@@ -1,14 +1,14 @@
 package compressor
 
 import (
-	"fmt"
-	"github.com/stretchr/testify/assert"
 	"io"
 	"io/ioutil"
 	"os"
 	"path/filepath"
 	"strings"
 	"testing"
+
+	"github.com/stretchr/testify/assert"
 )
 
 var flatFiles = []string{
@@ -39,7 +39,6 @@ func file1Skipper(filePath string) bool {
 }
 
 func level12Skipper(filePath string) bool {
-	fmt.Println("checking " + filePath)
 	return strings.HasSuffix(filePath, "/nested/level1/level12")
 }
 
@@ -119,12 +118,37 @@ func TestCompressors_canIgnoreCertainFilesInFlatStructure(t *testing.T) {
 	}
 }
 
-func TestCompressors_canCompressFlatDirectory(t *testing.T) {
+func TestCompressors_canCompressSingleFile(t *testing.T) {
 	t.Parallel()
+	fixturePath, err := filepath.Abs("./fixture")
+	assert.NoError(t, err)
+
 	for _, compressor := range compressors {
-		fixturePath, err := filepath.Abs("./fixture")
+		destDir, err := ioutil.TempDir("", "")
+		assert.NoError(t, err)
+		// defer os.RemoveAll(destDir)
+
+		r, w := io.Pipe()
+		go func() {
+			defer w.Close()
+			err = compressor.MakeBytes([]string{fixturePath + "/flat/file1"}, w, trueSkipper)
+			assert.NoError(t, err)
+		}()
+
+		err = compressor.OpenBytes(r, destDir)
 		assert.NoError(t, err)
 
+		_, err = os.Stat(destDir + "/file1")
+		assert.NoError(t, err)
+	}
+}
+
+func TestCompressors_canCompressFlatDirectory(t *testing.T) {
+	t.Parallel()
+	fixturePath, err := filepath.Abs("./fixture")
+	assert.NoError(t, err)
+
+	for _, compressor := range compressors {
 		destDir, err := ioutil.TempDir("", "")
 		assert.NoError(t, err)
 		defer os.RemoveAll(destDir)
