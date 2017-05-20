@@ -126,7 +126,7 @@ func TestCompressors_canCompressSingleFile(t *testing.T) {
 	for _, compressor := range compressors {
 		destDir, err := ioutil.TempDir("", "")
 		assert.NoError(t, err)
-		// defer os.RemoveAll(destDir)
+		defer os.RemoveAll(destDir)
 
 		r, w := io.Pipe()
 		go func() {
